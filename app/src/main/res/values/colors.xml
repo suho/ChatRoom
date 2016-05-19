@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="username0">#b71c1c</color>
+    <color name="username1">#880e4f</color>
+    <color name="username2">#4a148c</color>
+    <color name="username3">#3d5afe</color>
+    <color name="username4">#00b8d4</color>
+    <color name="username5">#4caf50</color>
+    <color name="username6">#76ff03</color>
+    <color name="username7">#afb42b</color>
+    <color name="username8">#ffff00</color>
+    <color name="username9">#ff6f00</color>
+    <color name="username10">#3e2723</color>
+    <color name="username11">#37474f</color>
+</resources>

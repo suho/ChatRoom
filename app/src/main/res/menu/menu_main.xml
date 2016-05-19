@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+    <item android:id="@+id/action_leave"
+        android:title="@string/action_leave"
+        android:orderInCategory="100"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_record"
+        android:icon="@android:drawable/ic_btn_speak_now"
+        android:title="@string/action_record"
+        app:showAsAction="always">
+        <menu>
+            <item android:id="@+id/start_record"
+                android:icon="@android:drawable/ic_btn_speak_now"
+                android:title="@string/action_record"
+                />
+
+            <item android:id="@+id/pause_record"
+                android:icon="@android:drawable/ic_media_pause"
+                android:title="@string/action_pause_record"
+                />
+
+            <item android:id="@+id/send_record"
+                android:icon="@android:drawable/ic_menu_send"
+                android:title="@string/action_send_record"
+                />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/emoji"
+        android:title="Emoji"
+        android:icon="@drawable/ic_emoji_action"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/emoji_happy"
+                android:icon="@drawable/emoji_happy"
+                android:title="@string/emoji_happy"/>
+            <item
+                android:id="@+id/emoji_sad"
+                android:icon="@drawable/emoji_sad"
+                android:title="@string/emoji_sad"/>
+            <item
+                android:id="@+id/emoji_angry"
+                android:icon="@drawable/emoji_angry"
+                android:title="@string/emoji_angry"/>
+        </menu>
+    </item>
+
+    <item android:id="@+id/action_attach"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title="@string/action_attach"
+        app:showAsAction="always" />
+
+
+
+</menu>
