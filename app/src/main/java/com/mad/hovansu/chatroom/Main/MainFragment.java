@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -29,7 +30,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,9 +62,7 @@ import io.socket.emitter.Emitter;
 public class MainFragment extends Fragment {
 
     private static final int REQUEST_LOGIN = 0;
-
     private static final int TYPING_TIMER_LENGTH = 600;
-
     private RecyclerView mMessagesView;
     private EditText mInputMessageView;
     private List<Message> mMessages = new ArrayList<Message>();
@@ -197,30 +195,37 @@ public class MainFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == Activity.RESULT_OK
-                && null != data) {
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = {MediaStore.Images.Media.DATA};
-            Cursor cursor = getActivity().getContentResolver().query(selectedImage,
-                    filePathColumn, null, null, null);
-            // Move to first row
-            cursor.moveToFirst();
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            imgDecodableString = cursor.getString(columnIndex);
-            cursor.close();
-            //Log.d("onActivityResult",imgDecodableString);
-            MainFragment fragment = (MainFragment) getFragmentManager().findFragmentById(R.id.chat);
-            fragment.sendImage(imgDecodableString);
-        } else {
-            if (Activity.RESULT_OK != resultCode) {
-                getActivity().finish();
-                return;
-            }
-            mUsername = data.getStringExtra("username");
-            int numUsers = data.getIntExtra("numUsers", 1);
+                    && null != data) {
+                Uri selectedImage = data.getData();
+                if(selectedImage!=null){
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-            addLog(getResources().getString(R.string.message_welcome));
-            addParticipantsLog(numUsers);
-        }
+                    Cursor cursor = getActivity().getContentResolver().query(selectedImage,
+                            filePathColumn, null, null, null);
+                    // Move to first row
+                    cursor.moveToFirst();
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    imgDecodableString = cursor.getString(columnIndex);
+                    cursor.close();
+                    //Log.d("onActivityResult",imgDecodableString);
+                    MainFragment fragment = (MainFragment) getFragmentManager().findFragmentById(R.id.chat);
+                    fragment.sendImage(imgDecodableString);
+                } else {
+                    Bitmap photo = (Bitmap) data.getExtras().get("data");
+                    MainFragment fragment = (MainFragment) getFragmentManager().findFragmentById(R.id.chat);
+                    fragment.sendImage(scaleDown(photo, 480, true));
+                }
+            } else {
+                if (Activity.RESULT_OK != resultCode) {
+                    //getActivity().finish();
+                    return;
+                }
+                mUsername = data.getStringExtra("username");
+                int numUsers = data.getIntExtra("numUsers", 1);
+
+                //addLog(getResources().getString(R.string.message_welcome));
+                addParticipantsLog(numUsers);
+            }
     }
 
     @Override
@@ -243,6 +248,9 @@ public class MainFragment extends Fragment {
                 return true;
             case R.id.action_attach:
                 openGallery();
+                return true;
+            case R.id.action_camera:
+                dispatchTakePictureIntent();
                 return true;
             case R.id.emoji_happy:
                 //Toast.makeText(getActivity().getApplicationContext(), "You send Happy", Toast.LENGTH_LONG).show();
@@ -279,6 +287,13 @@ public class MainFragment extends Fragment {
         startActivityForResult(galleryIntent, 1);
     }
 
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, 1);
+        }
+    }
+
     private void addLog(String message) {
         mMessages.add(new Message.Builder(Message.TYPE_LOG)
                 .message(message).build());
@@ -297,8 +312,20 @@ public class MainFragment extends Fragment {
         scrollToBottom();
     }
 
+    private void addMyMessage(String message){
+        mMessages.add(new Message.Builder(Message.TYPE_MY_MESSAGE).message(message).build());
+        mAdapter.notifyItemInserted(mMessages.size() - 1);
+        scrollToBottom();
+    }
+
     private void addImage(String username, Bitmap bmp){
         mMessages.add(new Message.Builder(Message.TYPE_IMAGE).username(username).image(bmp).build());
+        mAdapter.notifyItemInserted(mMessages.size() - 1);
+        scrollToBottom();
+    }
+
+    private void addMyImage(Bitmap bmp){
+        mMessages.add(new Message.Builder(Message.TYPE_MY_IMAGE).image(bmp).build());
         mAdapter.notifyItemInserted(mMessages.size() - 1);
         scrollToBottom();
     }
@@ -342,7 +369,7 @@ public class MainFragment extends Fragment {
             sendImage(emotionAngry);
         } else {
             mInputMessageView.setText("");
-                addMessage(mUsername, message);
+                addMyMessage(message);
             // perform the sending message attempt.
             mSocket.emit("new message", message);
         }
@@ -354,7 +381,7 @@ public class MainFragment extends Fragment {
         mTyping = false;
         String imageText = encodeImage(path);
         Bitmap bmp = decodeImage(imageText);
-        addImage(mUsername, bmp);
+        addMyImage(bmp);
         mSocket.emit("new image", imageText);
     }
 
@@ -363,7 +390,7 @@ public class MainFragment extends Fragment {
         if (!mSocket.connected()) return;
         mTyping = false;
         String imageText = encodeImage(bitmap);
-        addImage(mUsername, bitmap);
+        addMyImage(bitmap);
         mSocket.emit("new image", imageText);
     }
 
@@ -371,7 +398,7 @@ public class MainFragment extends Fragment {
         //get hovansu.3gpp
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hovansu.3gpp";
         byte[] soundByte = FileLocal_To_Byte(path);
-        addMessage(mUsername, "Vừa gửi đoạn ghi âm");
+        addMyMessage("Bạn vừa gửi đoạn ghi âm");
         mSocket.emit("new record", soundByte);
     }
 
@@ -430,11 +457,26 @@ public class MainFragment extends Fragment {
             e.printStackTrace();
         }
         Bitmap bm = BitmapFactory.decodeStream(fis);
+        Bitmap bmResize = scaleDown(bm, 480, true);
+        //Bitmap bmResize = Bitmap.createScaledBitmap(bm, 640, 480, true);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        bmResize.compress(Bitmap.CompressFormat.PNG, 100, baos);
         byte[] b = baos.toByteArray();
         String encImage = Base64.encodeToString(b, Base64.DEFAULT);
         return encImage;
+    }
+
+    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
+                                   boolean filter) {
+        float ratio = Math.min(
+                (float) maxImageSize / realImage.getWidth(),
+                (float) maxImageSize / realImage.getHeight());
+        int width = Math.round((float) ratio * realImage.getWidth());
+        int height = Math.round((float) ratio * realImage.getHeight());
+
+        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
+                height, filter);
+        return newBitmap;
     }
 
     private String encodeImage(Bitmap bitmap){

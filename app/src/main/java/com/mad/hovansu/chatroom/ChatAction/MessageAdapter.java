@@ -44,6 +44,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             case Message.TYPE_IMAGE:
                 layout = R.layout.item_image;
                 break;
+            case Message.TYPE_MY_MESSAGE:
+                layout = R.layout.item_my_message;
+                break;
+            case Message.TYPE_MY_IMAGE:
+                layout = R.layout.item_my_image;
         }
         View v = LayoutInflater
                 .from(parent.getContext())

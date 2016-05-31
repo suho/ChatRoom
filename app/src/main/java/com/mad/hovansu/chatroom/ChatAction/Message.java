@@ -12,6 +12,8 @@ public class Message {
     public static final int TYPE_LOG = 1;
     public static final int TYPE_ACTION = 2;
     public static final int TYPE_IMAGE = 3;
+    public static final int TYPE_MY_MESSAGE = 4;
+    public static final int TYPE_MY_IMAGE = 5;
 
     private int mType;
     private String mMessage;

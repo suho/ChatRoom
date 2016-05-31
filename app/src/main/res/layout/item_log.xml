@@ -4,14 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="@dimen/spacing">
+    android:paddingTop="@dimen/spacing"
+    >
 
     <TextView
         android:id="@+id/message"
         style="?android:textAppearanceSmall"
-        android:textColor="?android:textColorSecondary"
+        android:textColor="@android:color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:textStyle="bold" />
 
 </LinearLayout>

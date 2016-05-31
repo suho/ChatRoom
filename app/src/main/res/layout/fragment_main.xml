@@ -30,12 +30,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="@string/prompt_message"
+            android:textColorHint="#9f9f9f"
             android:imeActionId="@+id/send"
             android:imeActionLabel="@string/action_send"
             android:imeOptions="actionSend"
             android:inputType="text"
             android:maxLines="1"
-            android:singleLine="true"/>
+            android:singleLine="true"
+            android:textColor="@android:color/white" />
         <ImageButton
             android:id="@+id/send_button"
             android:layout_width="wrap_content"

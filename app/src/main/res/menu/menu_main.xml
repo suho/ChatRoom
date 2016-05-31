@@ -57,6 +57,9 @@
         android:title="@string/action_attach"
         app:showAsAction="always" />
 
-
+    <item   android:id="@+id/action_camera"
+            android:icon="@android:drawable/ic_menu_camera"
+            android:title="@string/action_camera"
+            app:showAsAction="always"/>
 
 </menu>
